@@ -44,7 +44,7 @@ const Header = () => {
                         }}
                   >
                         <Typography variant="h2" sx={{ fontWeight: "bold", color: "white" }}>
-                              Galvanic Cel
+                              Galvanic Cell
                         </Typography>
                   </Card>
             </Box>
