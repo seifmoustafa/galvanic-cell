@@ -114,8 +114,8 @@ const GalvanicTheory = () => {
     setSelectedCell(null);
   };
 
-  return (
-    <Box sx={{ textAlign: "center", padding: "20px", direction: "rtl",  }}>
+  return (<div style={{ marginTop: "20px" }}>
+    <Box sx={{ textAlign: "center", padding: "20px", direction: "rtl", }}>
       <Typography color="white" variant="h4" sx={{ fontWeight: "bold" }}>
         ⚡ الخلايا الجلفانية - التفسير النظري
       </Typography>
@@ -146,7 +146,7 @@ const GalvanicTheory = () => {
           </>
         )}
       </Dialog>
-    </Box>
+    </Box></div>
   );
 };
 

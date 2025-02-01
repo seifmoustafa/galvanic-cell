@@ -10,7 +10,7 @@ const SummaryTable = () => {
             { cell: "خلية الرصاص-النحاس (Pb-Cu)", standardVoltage: "0.92V", actualVoltage: "0.95V" },
       ];
 
-      return (
+      return (<div style={{ marginTop: "20px" }}>
             <Box sx={{
                   mt: 4,
                   p: 3,
@@ -60,9 +60,8 @@ const SummaryTable = () => {
                               </TableBody>
                         </Table>
                   </TableContainer>
-            </Box>
+            </Box></div>
       );
 };
 
 export default SummaryTable;
-      

@@ -102,7 +102,7 @@ const GalvanicCalculator = () => {
             }
       };
 
-      return (
+      return (<div style={{ marginTop: "20px" }}>
             <Box sx={{ padding: 4, direction: "rtl" }}>
                   <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center", color: "white" }}>
                         ⚡ حساب الجهد الكهربائي للخلايا الجلفانية والتحليل الكهربائي
@@ -168,7 +168,7 @@ const GalvanicCalculator = () => {
                         <DialogTitle sx={{ color: "red", textAlign: "center" }}>⚠ خطأ</DialogTitle>
                         <DialogContent sx={{ textAlign: "center" }}>{errorMessage}</DialogContent>
                   </Dialog>
-            </Box>
+            </Box></div>
       );
 };
 

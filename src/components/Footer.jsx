@@ -1,7 +1,7 @@
 import { Box, Typography, Link } from "@mui/material";
 
 const Footer = () => {
-      return (
+      return (<div style={{ marginTop: "20px" }}>
             <Box
                   sx={{
                         // backgroundColor: "#1565c0",
@@ -57,7 +57,7 @@ const Footer = () => {
                   <Typography variant="body2" sx={{ marginTop: "10px", fontStyle: "italic" }}>
                         © {new Date().getFullYear()} Galvanic Cell Project - All rights reserved.
                   </Typography>
-            </Box>
+            </Box></div>
       );
 };
 
