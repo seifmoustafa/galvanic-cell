@@ -1,14 +1,19 @@
 {
   "files": {
-    "main.css": "/galvanic-cell/static/css/main.3bb1893a.css",
-    "main.js": "/galvanic-cell/static/js/main.66ad41da.js",
-    "static/media/background.png": "/galvanic-cell/static/media/background.f24000232ee948bae2b0.png",
+    "main.css": "/galvanic-cell/static/css/main.af0da898.css",
+    "main.js": "/galvanic-cell/static/js/main.74b837df.js",
+    "static/media/school.png": "/galvanic-cell/static/media/school.f8e83d1d5057f082d94d.png",
+    "static/media/danial_cell.png": "/galvanic-cell/static/media/danial_cell.9a3d3c01f8be298b8264.png",
+    "static/media/Aluminium-Copper.jpg": "/galvanic-cell/static/media/Aluminium-Copper.7457970afd87d38d3463.jpg",
+    "static/media/pencil.png": "/galvanic-cell/static/media/pencil.395be54151c60321bf3b.png",
+    "static/media/back.jpeg": "/galvanic-cell/static/media/back.f3b787151e2aa0c54ae2.jpeg",
+    "static/media/sodium.jpg": "/galvanic-cell/static/media/sodium.c3cb53145bcd4255531f.jpg",
     "index.html": "/galvanic-cell/index.html",
-    "main.3bb1893a.css.map": "/galvanic-cell/static/css/main.3bb1893a.css.map",
-    "main.66ad41da.js.map": "/galvanic-cell/static/js/main.66ad41da.js.map"
+    "main.af0da898.css.map": "/galvanic-cell/static/css/main.af0da898.css.map",
+    "main.74b837df.js.map": "/galvanic-cell/static/js/main.74b837df.js.map"
   },
   "entrypoints": [
-    "static/css/main.3bb1893a.css",
-    "static/js/main.66ad41da.js"
+    "static/css/main.af0da898.css",
+    "static/js/main.74b837df.js"
   ]
 }
