@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import backgroundImage from "../assets/background.png";
+import backgroundImage from "../assets/back.jpeg";
 import schoolLogo from "../assets/school.png"; // Importing the school logo
 
 const Header = () => {
@@ -7,7 +7,7 @@ const Header = () => {
             <Box
                   sx={{
                         width: "100%", // Full width for all screens
-                        minHeight: { xs: "250px", sm: "350px", md: "550px", lg: "1060px" }, // Adjust height dynamically
+                        minHeight: { xs: "250px", sm: "350px", md: "550px", lg: "1600px" }, // Adjust height dynamically
                         backgroundImage: `url(${backgroundImage})`,
                         backgroundSize: "cover", // Ensures the full image is always visible
                         backgroundPosition: "center",
