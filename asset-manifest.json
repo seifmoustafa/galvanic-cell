@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/galvanic-cell-app/static/css/main.3bb1893a.css",
+    "main.js": "/galvanic-cell-app/static/js/main.681938b7.js",
+    "static/media/background.png": "/galvanic-cell-app/static/media/background.f24000232ee948bae2b0.png",
+    "index.html": "/galvanic-cell-app/index.html",
+    "main.3bb1893a.css.map": "/galvanic-cell-app/static/css/main.3bb1893a.css.map",
+    "main.681938b7.js.map": "/galvanic-cell-app/static/js/main.681938b7.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3bb1893a.css",
+    "static/js/main.681938b7.js"
+  ]
+}
