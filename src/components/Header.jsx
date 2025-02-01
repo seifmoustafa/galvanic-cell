@@ -24,7 +24,7 @@ const Header = () => {
                               position: "absolute",
                               top: "15px", // Positioned near the top
                               right: "20px", // Adjusted for better spacing
-                              backgroundColor: "rgba(128, 128, 128, 0.5)", // Grey color with opacity
+                              backgroundColor: "rgba(128, 128, 128, 0.6)", // Grey color with opacity
                               padding: "8px", // Padding inside the box
                               borderRadius: "12px", // Rounded corners
                               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // Subtle shadow effect
