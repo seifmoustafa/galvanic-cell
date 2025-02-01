@@ -1,204 +1,158 @@
 import { useState } from "react";
 import {
-      Box,
-      Card,
-      Typography,
-      Grid,
-      TextField,
-      MenuItem,
-      Button,
-      Divider,
-      Dialog,
-      DialogTitle,
-      DialogContent,
-      Fade,
+      Box, Card, Typography, Grid, TextField, MenuItem, Button, Dialog, DialogTitle, DialogContent, Fade, Backdrop
 } from "@mui/material";
 import { Line } from "react-chartjs-2";
-import {
-      Chart,
-      CategoryScale,
-      LinearScale,
-      LogarithmicScale,
-      PointElement,
-      LineElement,
-      Title,
-      Tooltip,
-} from "chart.js";
+import { Chart, CategoryScale, LinearScale, LogarithmicScale, PointElement, LineElement, Title, Tooltip } from "chart.js";
 
-// Register Chart.js components
 Chart.register(CategoryScale, LinearScale, LogarithmicScale, PointElement, LineElement, Title, Tooltip);
 
-const F = 96485; // Faraday's constant
+const F = 96485;
 
-const galvanicCells = [
-      {
-            name: "Daniel Cell (Zn-Cu)",
-            anode: { metal: "Zn", potential: -0.76 },
-            cathode: { metal: "Cu", potential: 0.34 },
-            electrons: 2,
-      },
-      {
-            name: "Magnesium-Copper Cell (Mg-Cu)",
-            anode: { metal: "Mg", potential: -2.37 },
-            cathode: { metal: "Cu", potential: 0.34 },
-            electrons: 2,
-      },
-      {
-            name: "Iron-Silver Cell (Fe-Ag)",
-            anode: { metal: "Fe", potential: -0.44 },
-            cathode: { metal: "Ag", potential: 0.80 },
-            electrons: 2,
-      },
+const experiments = [
+      { name: "خلية دانيال (Zn-Cu)", type: "galvanic", anode: -0.76, cathode: 0.34, electrons: 2, inputs: ["anodeConc", "cathodeConc"] },
+      { name: "خلية مغنيسيوم-نحاس (Mg-Cu)", type: "galvanic", anode: -2.37, cathode: 0.34, electrons: 2, inputs: ["anodeConc", "cathodeConc"] },
+      { name: "خلية الحديد-الفضة (Fe-Ag)", type: "galvanic", anode: -0.44, cathode: 0.80, electrons: 2, inputs: ["anodeConc", "cathodeConc"] },
+      { name: "تحليل الماء كهربائياً", type: "electrolysis", voltageRequired: 1.23, inputs: ["voltage", "conductivity", "impurityConc", "temperature"] },
+      { name: "تحليل محلول كلوريد الصوديوم", type: "electrolysis", voltageRequired: 2.2, inputs: ["NaClConc", "voltage", "temperature", "time"] },
+      { name: "جسر الملح NaCl", type: "salt_bridge", resistanceFactor: 0.02, inputs: ["saltConc", "conductivity", "distance"] }
 ];
 
 const GalvanicCalculator = () => {
-      const [selectedCell, setSelectedCell] = useState(galvanicCells[0]);
-      const [anodeConcentration, setAnodeConcentration] = useState(0.01);
-      const [cathodeConcentration, setCathodeConcentration] = useState(1);
+      const [selectedExp, setSelectedExp] = useState(experiments[0]);
+      const [inputs, setInputs] = useState({
+            anodeConc: 0.01, cathodeConc: 1, voltage: 2, time: 10,
+            saltConc: 1, conductivity: 1, distance: 5, impurityConc: 0.01, NaClConc: 1, temperature: 298
+      });
       const [results, setResults] = useState(null);
       const [graphData, setGraphData] = useState({ labels: [], datasets: [] });
-      const [errorMessage, setErrorMessage] = useState(false);
+      const [errorMessage, setErrorMessage] = useState("");
+
+      const handleInputChange = (field, value) => {
+            setInputs((prev) => ({ ...prev, [field]: parseFloat(value) }));
+      };
+
+      const closeErrorPopup = () => {
+            setErrorMessage("");
+      };
 
       const calculateResults = () => {
-            const { anode, cathode, electrons } = selectedCell;
+            try {
+                  let standardCellPotential = 0;
+                  let actualVoltage = 0;
+                  let deltaG = 0;
+                  let labels = [];
+                  let dataPoints = [];
 
-            if (anodeConcentration <= 0 || cathodeConcentration <= 0) {
-                  setErrorMessage(true); // Show error popup
-                  setTimeout(() => setErrorMessage(false), 1500); // Auto-close after 1.5s
-                  return;
+                  if (selectedExp.type === "galvanic") {
+                        if (inputs.anodeConc <= 0 || inputs.cathodeConc <= 0) throw new Error("⚠ قيم التركيز يجب أن تكون أكبر من الصفر!");
+                        standardCellPotential = selectedExp.cathode - selectedExp.anode;
+                        actualVoltage = standardCellPotential - (0.0591 / selectedExp.electrons) * Math.log10(inputs.anodeConc / inputs.cathodeConc);
+                        deltaG = -selectedExp.electrons * F * actualVoltage;
+
+                        for (let i = 1; i <= 50; i++) {
+                              let conc = 0.001 + i * 0.1;
+                              labels.push(conc.toFixed(2));
+                              dataPoints.push(standardCellPotential - (0.0591 / selectedExp.electrons) * Math.log10(conc / inputs.anodeConc));
+                        }
+                  } else if (selectedExp.type === "electrolysis") {
+                        if (inputs.voltage < selectedExp.voltageRequired) throw new Error("⚠ يجب أن يكون الجهد أكبر من الحد الأدنى للتحليل الكهربائي!");
+                        standardCellPotential = selectedExp.voltageRequired;
+                        actualVoltage = inputs.voltage - standardCellPotential;
+                        deltaG = actualVoltage * F;
+
+                        for (let i = 0; i <= inputs.time; i++) {
+                              labels.push(i);
+                              dataPoints.push(actualVoltage * i);
+                        }
+                  } else if (selectedExp.type === "salt_bridge") {
+                        if (inputs.saltConc <= 0 || inputs.conductivity <= 0) throw new Error("⚠ يجب أن تكون قيم التوصيلية والتركيز موجبة!");
+                        standardCellPotential = selectedExp.resistanceFactor * (inputs.saltConc / inputs.conductivity);
+                        actualVoltage = standardCellPotential;
+                        deltaG = -F * actualVoltage;
+
+                        for (let i = 1; i <= 50; i++) {
+                              labels.push(i);
+                              dataPoints.push(standardCellPotential * i);
+                        }
+                  }
+
+                  setResults({
+                        "الجهد القياسي للخلية": standardCellPotential.toFixed(2),
+                        "الجهد الفعلي": actualVoltage.toFixed(2),
+                        "طاقة جيبس الحرة (ΔG)": (deltaG / 1000).toFixed(2),
+                  });
+
+                  setGraphData({
+                        labels: labels,
+                        datasets: [
+                              {
+                                    label: "الجهد الكهربائي (V)",
+                                    data: dataPoints,
+                                    borderColor: "#1565c0",
+                                    borderWidth: 3,
+                                    pointRadius: 0,
+                                    fill: false,
+                                    tension: 0.3,
+                              },
+                        ],
+                  });
+            } catch (error) {
+                  setErrorMessage(error.message);
             }
-
-            // ✅ Standard Cell Potential Calculation
-            const standardCellPotential = cathode.potential - anode.potential;
-
-            // ✅ Nernst Equation Application
-            const E_actual =
-                  standardCellPotential -
-                  (0.0591 / electrons) * Math.log10(anodeConcentration / cathodeConcentration);
-
-            // ✅ Gibbs Free Energy Calculation
-            const deltaG = -electrons * F * E_actual;
-            const deltaG_kJ = deltaG / 1000;
-
-            setResults({
-                  standardCellPotential: standardCellPotential.toFixed(2),
-                  actualVoltage: E_actual.toFixed(2),
-                  gibbsFreeEnergy: deltaG_kJ.toFixed(2),
-            });
-
-            // ✅ Properly Scale X-Axis
-            const minConcentration = Math.min(anodeConcentration, cathodeConcentration) / 10;
-            const maxConcentration = Math.max(anodeConcentration, cathodeConcentration) * 10;
-
-            let concentrations = [];
-            let voltages = [];
-
-            for (let i = 0; i <= 100; i++) {
-                  const conc = minConcentration * Math.pow(10, (i / 100) * Math.log10(maxConcentration / minConcentration));
-                  concentrations.push(conc);
-                  voltages.push(
-                        standardCellPotential - (0.0591 / electrons) * Math.log10(conc / anodeConcentration)
-                  );
-            }
-
-            setGraphData({
-                  labels: concentrations.map(val => val.toFixed(2)),
-                  datasets: [
-                        {
-                              label: "Cell Voltage (V)",
-                              data: voltages,
-                              borderColor: "#1565c0",
-                              borderWidth: 3,
-                              pointBackgroundColor: "transparent",
-                              pointRadius: 0,
-                              fill: false,
-                              tension: 0.4,
-                        },
-                  ],
-            });
       };
 
       return (
-            <Box sx={{ padding: 4 }}>
-                  <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 3, textAlign: "center", color: "#1565c0" }}>
-                        ⚡ Galvanic Cell Calculator
+            <Box sx={{ padding: 4, direction: "rtl" }}>
+                  <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center", color: "#1565c0" }}>
+                        ⚡ حساب الجهد الكهربائي للخلايا الجلفانية والتحليل الكهربائي
                   </Typography>
 
                   <Grid container spacing={3}>
                         <Grid item xs={12} md={6}>
-                              <Card sx={{ padding: 3, boxShadow: 3 }}>
-                                    <Typography variant="h5" sx={{ fontWeight: "bold" }}>Select Galvanic Cell</Typography>
-                                    <TextField select fullWidth label="Galvanic Cell" value={selectedCell.name} onChange={(e) => setSelectedCell(galvanicCells.find(cell => cell.name === e.target.value))} sx={{ marginTop: 2 }}>
-                                          {galvanicCells.map((cell, index) => (
-                                                <MenuItem key={index} value={cell.name}>{cell.name}</MenuItem>
-                                          ))}
+                              <Card sx={{ padding: 3, boxShadow: 3, backgroundColor: "#f9f9f9" }}>
+                                    <Typography variant="h6">اختر التجربة</Typography>
+                                    <TextField select fullWidth label="التجربة" value={selectedExp.name} onChange={(e) => setSelectedExp(experiments.find(exp => exp.name === e.target.value))}>
+                                          {experiments.map((exp, index) => <MenuItem key={index} value={exp.name}>{exp.name}</MenuItem>)}
                                     </TextField>
                               </Card>
                         </Grid>
 
                         <Grid item xs={12} md={6}>
-                              <Card sx={{ padding: 3, boxShadow: 3 }}>
-                                    <Typography variant="h5" sx={{ fontWeight: "bold" }}>Input Parameters</Typography>
-                                    <TextField fullWidth type="number" label="Anode Concentration (M)" value={anodeConcentration} onChange={(e) => setAnodeConcentration(parseFloat(e.target.value))} sx={{ marginTop: 2 }} />
-                                    <TextField fullWidth type="number" label="Cathode Concentration (M)" value={cathodeConcentration} onChange={(e) => setCathodeConcentration(parseFloat(e.target.value))} sx={{ marginTop: 2 }} />
+                              <Card sx={{ padding: 3, boxShadow: 3, backgroundColor: "#f9f9f9" }}>
+                                    <Typography variant="h6">إدخال القيم</Typography>
+                                    {selectedExp.inputs.map((field) => (
+                                          <TextField fullWidth key={field} type="number" sx={{ marginTop: 2 }} label={field.replace(/([A-Z])/g, " $1")} value={inputs[field]} onChange={(e) => handleInputChange(field, e.target.value)} />
+                                    ))}
                               </Card>
                         </Grid>
                   </Grid>
 
-                  <Divider sx={{ marginY: 3 }} />
-
-                  <Button variant="contained" color="primary" fullWidth onClick={calculateResults} sx={{ fontSize: "18px", padding: "12px" }}>
-                        Calculate 🔢
+                  <Button variant="contained" color="primary" fullWidth onClick={calculateResults} sx={{ fontSize: "18px", padding: "12px", marginTop: 3 }}>
+                        احسب النتائج 🔢
                   </Button>
-
                   {results && (
-                        <Card sx={{ padding: 3, marginTop: 3, boxShadow: 3 }}>
-                              <Typography variant="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>Results</Typography>
-                              <Typography>✅ <strong>Standard Cell Voltage:</strong> {results.standardCellPotential}V</Typography>
-                              <Typography>✅ <strong>Actual Voltage:</strong> {results.actualVoltage}V</Typography>
-                              <Typography>✅ <strong>Gibbs Free Energy (ΔG):</strong> {results.gibbsFreeEnergy} kJ</Typography>
-                        </Card>
+                        <Grid container spacing={2} sx={{ marginTop: 3 }}>
+                              {Object.entries(results).map(([key, value]) => (
+                                    <Grid item xs={12} sm={4} key={key}>
+                                          <Card sx={{ padding: 2, textAlign: "center", backgroundColor: "#e3f2fd", fontSize: "18px" }}>
+                                                <Typography sx={{ fontWeight: "bold" }}>✅ {key}: {value}</Typography>
+                                          </Card>
+                                    </Grid>
+                              ))}
+                        </Grid>
                   )}
-
                   {graphData.labels.length > 0 && (
-                        <Card sx={{ padding: 3, marginTop: 3, boxShadow: 3 }}>
-                              <Typography variant="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>Voltage vs. Concentration</Typography>
-                              <Box sx={{ width: "100%", height: "300px" }}>
-                                    <Line data={graphData} options={{
-                                          responsive: true,
-                                          maintainAspectRatio: false,
-                                          plugins: {
-                                                tooltip: {
-                                                      enabled: true,
-                                                      mode: "nearest",
-                                                      intersect: false,
-                                                      callbacks: {
-                                                            label: function (tooltipItem) {
-                                                                  return `Voltage: ${tooltipItem.raw.toFixed(3)}V`;
-                                                            },
-                                                            title: function (tooltipItems) {
-                                                                  return `Concentration: ${tooltipItems[0].label} M`;
-                                                            },
-                                                      },
-                                                },
-                                          },
-                                    }} />
+                        <Card sx={{ padding: 3, marginTop: 3, boxShadow: 3, width: "100%" }}>
+                              <Box sx={{ width: "100%", height: "500px" }}>
+                                    <Line data={graphData} options={{ responsive: true, maintainAspectRatio: false, plugins: { tooltip: { enabled: true } } }} />
                               </Box>
                         </Card>
                   )}
-
-                  {/* Popup for Error Messages */}
-                  <Dialog
-                        open={errorMessage}
-                        onClose={() => setErrorMessage(false)}
-                        sx={{ backdropFilter: "blur(1px)" }} // Blurred background
-                        TransitionComponent={Fade} // Smooth animation
-                        transitionDuration={1000} // 1.5 seconds
-                  >
-                        <DialogTitle sx={{ textAlign: "center", color: "red", fontWeight: "bold" }}>⚠ Error</DialogTitle>
-                        <DialogContent sx={{ textAlign: "center", fontSize: "18px" }}>
-                              ❌ Concentration values must be greater than zero!
-                        </DialogContent>
+                  <Dialog open={!!errorMessage} TransitionComponent={Fade} onClose={closeErrorPopup}>
+                        <Backdrop open={!!errorMessage} sx={{ zIndex: -1 }} onClick={closeErrorPopup} />
+                        <DialogTitle sx={{ color: "red", textAlign: "center" }}>⚠ خطأ</DialogTitle>
+                        <DialogContent sx={{ textAlign: "center" }}>{errorMessage}</DialogContent>
                   </Dialog>
             </Box>
       );
