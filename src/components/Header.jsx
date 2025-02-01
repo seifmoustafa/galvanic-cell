@@ -1,52 +1,33 @@
-import { Box, Card, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import backgroundImage from "../assets/background.png";
 
 const Header = () => {
       return (
             <Box
                   sx={{
-                        position: "relative",
-                        width: "100%",
-                        height: "1060px", // Adjusts to the image height
+                        width: "100%", // Full width for all screens
+                        minHeight: { xs: "250px", sm: "350px", md: "550px", lg: "1060px" }, // Adjust height dynamically
                         backgroundImage: `url(${backgroundImage})`,
-                        backgroundSize: "100% 100%", // Stretches the image to fit fully
+                        backgroundSize: "contain", // Ensures the full image is always visible
                         backgroundPosition: "center",
                         backgroundRepeat: "no-repeat",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        padding: "40px 0", // Adds spacing for better aesthetics
-
                   }}
             >
-                  {/* Gradient Overlay for better text visibility */}
                   <Box
                         sx={{
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              width: "100%",
-                              height: "100%",
-                              background: "linear-gradient( rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2) )",
-                        }}
-                  />
-
-                  {/* Title Card */}
-                  <Card
-                        sx={{
-                              position: "relative",
-                              backgroundColor: "rgba(255, 255, 255, 0.2)",
-                              backdropFilter: "blur(8px)",
-                              padding: "20px 40px",
-                              borderRadius: "12px",
-                              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
+                              backgroundColor: "rgba(0, 0, 0, 0.6)", // Slightly darker overlay for readability
+                              padding: { xs: "10px", md: "20px" },
+                              borderRadius: "10px",
+                              color: "white",
                               textAlign: "center",
+                              width: { xs: "90%", sm: "70%", md: "50%" }, // Adjust width based on screen size
                         }}
                   >
-                        <Typography variant="h2" sx={{ fontWeight: "bold", color: "white" }}>
-                              Galvanic Cell
-                        </Typography>
-                  </Card>
+                        <h1 style={{ fontSize: "2.5rem", fontWeight: "bold" }}>Galvanic Cell</h1>
+                  </Box>
             </Box>
       );
 };
