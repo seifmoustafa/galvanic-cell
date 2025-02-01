@@ -115,8 +115,8 @@ const GalvanicTheory = () => {
   };
 
   return (
-    <Box sx={{ textAlign: "center", padding: "20px", direction: "rtl" }}>
-      <Typography variant="h4" sx={{ fontWeight: "bold", color: "#1565c0" }}>
+    <Box sx={{ textAlign: "center", padding: "20px", direction: "rtl",  }}>
+      <Typography color="white" variant="h4" sx={{ fontWeight: "bold" }}>
         ⚡ الخلايا الجلفانية - التفسير النظري
       </Typography>
       <Grid container spacing={4} justifyContent="center">
@@ -124,7 +124,7 @@ const GalvanicTheory = () => {
           <Grid item xs={12} sm={4} key={index}>
             <CardActionArea onClick={() => handleOpen(cell)}>
               <Avatar src={cell.image} sx={{ width: "120px", height: "120px", margin: "auto" }} />
-              <Typography variant="h6">{cell.name}</Typography>
+              <Typography color="white" variant="h6">{cell.name}</Typography>
             </CardActionArea>
           </Grid>
         ))}

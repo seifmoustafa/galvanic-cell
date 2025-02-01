@@ -11,11 +11,10 @@ body {
     #006699 80%,
     #0088cc 100%
   );
-  background-attachment: fixed; /* Ensures smooth scrolling */
+  background-attachment: scroll;
   color: #333;
   opacity: 0;
-  transform: translateY(-50px); /* Start slightly above */
-  animation: slideDown 1.2s ease-in-out forwards;
+  animation: fadeIn 1.2s ease-in-out forwards;
 }
 
 /* Navbar */
@@ -51,8 +50,8 @@ body {
 section {
   padding: 40px 20px;
   opacity: 0;
-  transform: translateY(50px);
-  animation: fadeInUp 1s ease-out forwards 0.6s;
+  transform: translateY(20px); /* Smoothly move sections up */
+  animation: fadeInUp 1s ease-in-out forwards 0.6s;
 }
 
 /* Hero Section */
@@ -97,5 +96,132 @@ section {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Table Styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+thead {
+  background: linear-gradient(to right, #0d47a1, #1976d2);
+  color: white;
+  font-weight: bold;
+}
+
+tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+tbody tr:nth-child(odd) {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: 0.3s;
+}
+
+/* Card Styling */
+.card {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Footer Styling */
+footer {
+  background-color: #1565c0;
+  padding: 20px;
+  color: white;
+  text-align: center;
+  margin-top: 20px;
+  box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.2);
+}
+
+footer a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  margin: 0 10px;
+}
+
+footer a:hover {
+  color: #ffcc00;
+}
+
+/* Buttons */
+button,
+.MuiButton-root {
+  background-color: #1565c0;
+  color: white;
+  font-size: 16px;
+  padding: 12px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+button:hover,
+.MuiButton-root:hover {
+  background-color: #1976d2;
+  cursor: pointer;
+}
+
+button:active,
+.MuiButton-root:active {
+  background-color: #0d47a1;
+}
+
+/* Form & Input Styling */
+input,
+select,
+textarea {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #1565c0;
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+  height: 150px;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .navbar ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-section {
+    height: 80vh;
+    padding: 20px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+
+  section {
+    padding: 20px 10px;
   }
 }

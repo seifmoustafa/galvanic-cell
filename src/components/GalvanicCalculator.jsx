@@ -104,7 +104,7 @@ const GalvanicCalculator = () => {
 
       return (
             <Box sx={{ padding: 4, direction: "rtl" }}>
-                  <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center", color: "#1565c0" }}>
+                  <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center", color: "white" }}>
                         ⚡ حساب الجهد الكهربائي للخلايا الجلفانية والتحليل الكهربائي
                   </Typography>
 
@@ -112,8 +112,22 @@ const GalvanicCalculator = () => {
                         <Grid item xs={12} md={6}>
                               <Card sx={{ padding: 3, boxShadow: 3, backgroundColor: "#f9f9f9" }}>
                                     <Typography variant="h6">اختر التجربة</Typography>
-                                    <TextField select fullWidth label="التجربة" value={selectedExp.name} onChange={(e) => setSelectedExp(experiments.find(exp => exp.name === e.target.value))}>
-                                          {experiments.map((exp, index) => <MenuItem key={index} value={exp.name}>{exp.name}</MenuItem>)}
+                                    <TextField
+                                          select
+                                          fullWidth
+                                          label="التجربة"
+                                          value={selectedExp.name}
+                                          onChange={(e) => {
+                                                e.preventDefault();  // Prevent unintended scrolling
+                                                const newExp = experiments.find(exp => exp.name === e.target.value);
+                                                setSelectedExp(newExp);
+                                          }}
+                                          onClick={(e) => e.stopPropagation()} // Prevent bubbling issues
+                                          onFocus={(e) => e.stopPropagation()} // Ensure the focus remains on the select field
+                                    >
+                                          {experiments.map((exp, index) => (
+                                                <MenuItem key={index} value={exp.name}>{exp.name}</MenuItem>
+                                          ))}
                                     </TextField>
                               </Card>
                         </Grid>
