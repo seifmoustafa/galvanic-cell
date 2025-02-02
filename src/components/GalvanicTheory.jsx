@@ -25,7 +25,7 @@ import danialCell from "../assets/danial_cell.png";
 import aluminiumCopper from "../assets/Aluminium-Copper.jpg";
 import ironSilver from "../assets/Iron-Silver.png";
 import pencilElectrolysis from "../assets/pencil.png";
-import sodiumElectrolysis from "../assets/sodium.jpg";
+import sodiumElectrolysis from "../assets/sodium.png";
 import saltBridgeKCl from "../assets/salt.png"; // Reuse salt.png or another KCl image
 
 // ✅ Styling
