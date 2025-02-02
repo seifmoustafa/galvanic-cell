@@ -243,7 +243,7 @@ const GalvanicTheory = () => {
   return (
     <div style={{ marginTop: "20px" }}>
       <Box sx={{ textAlign: "center", padding: "20px", direction: "rtl" }}>
-        <Typography color="white" variant="h4" sx={{ fontWeight: "bold" }}>
+        <Typography color="white" variant="h4" sx={{ fontWeight: "bold", paddingY: "20px" }}>
           ⚡ الخلايا الجلفانية - التفسير النظري
         </Typography>
         <Grid container spacing={4} justifyContent="center">

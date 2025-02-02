@@ -6,10 +6,10 @@ body {
   box-sizing: border-box;
   background: linear-gradient(
     180deg,
-    #001f3f 0%,
+    #013264 0%,
     #003366 40%,
-    #006699 80%,
-    #0088cc 100%
+    #0c6d9e 80%,
+    #0089ce 100%
   );
   background-attachment: scroll;
   color: #333;

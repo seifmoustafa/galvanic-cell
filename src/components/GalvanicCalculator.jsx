@@ -25,7 +25,6 @@ import {
       Tooltip
 } from "chart.js";
 
-// Register Chart.js components
 Chart.register(
       CategoryScale,
       LinearScale,
@@ -36,14 +35,14 @@ Chart.register(
       Tooltip
 );
 
-// Faraday's constant (C/mol)
+/** Faraday Constant */
 const F = 96485;
 
 /**
  * Experiments array:
- *  - type: (galvanic, electrolysis, kcl_bridge)
- *  - xLabel: the label for the X-axis in Arabic
- *  - inputs: array of keys that the user must provide
+ * - name: The Arabic name displayed in the dropdown
+ * - type: 'galvanic', 'electrolysis', or 'kcl_bridge'
+ * - For 'kcl_bridge', the user inputs kclConc, conductivity, distance
  */
 const experiments = [
       {
@@ -52,7 +51,7 @@ const experiments = [
             anode: -0.76,
             cathode: 0.34,
             electrons: 2,
-            inputs: ["anodeConc", "cathodeConc"], // concentrations
+            inputs: ["anodeConc", "cathodeConc"],
             xLabel: "التركيز (M)"
       },
       {
@@ -77,7 +76,6 @@ const experiments = [
             name: "تحليل الماء كهربائياً",
             type: "electrolysis",
             voltageRequired: 1.23,
-            // We'll treat "time" as (s), "voltage" as (V), "conductivity" as (S/m), etc.
             inputs: ["voltage", "conductivity", "impurityConc", "temperature", "time"],
             xLabel: "الزمن (ث)"
       },
@@ -89,30 +87,30 @@ const experiments = [
             xLabel: "الزمن (ث)"
       },
       {
-            // ✅ Changed from "جسر الملح NaCl" to "جسر الملح KCl" 
-            name: "جسر الملح KCl (خلية ماسور)",
-            type: "kcl_bridge", // changed the 'type' to reflect KCl bridging
+            // ✅ UPDATED: 'jسر الملح KCl'
+            name: "جسر الملح KCl (إعداد خلية ماسور - Massor Cell Setup)",
+            type: "kcl_bridge",
             resistanceFactor: 0.02,
-            // We'll require kclConc instead of saltConc
+            // The user must enter these fields:
             inputs: ["kclConc", "conductivity", "distance"],
             xLabel: "المسافة (cm)"
       }
 ];
 
 const GalvanicCalculator = () => {
-      // Default state: note we replaced saltConc with kclConc
+      // Default state includes kclConc instead of saltConc
       const [selectedExp, setSelectedExp] = useState(experiments[0]);
       const [inputs, setInputs] = useState({
-            anodeConc: 0.01,  // (M)
-            cathodeConc: 1,   // (M)
-            voltage: 2,       // (V)
-            time: 10,         // (s)
-            kclConc: 1,       // (M) replaced saltConc
-            conductivity: 1,  // (S/m)
-            distance: 5,      // (cm)
-            impurityConc: 0.01, // (?)
-            NaClConc: 1,      // (M)
-            temperature: 298  // (K)
+            anodeConc: 0.01,
+            cathodeConc: 1,
+            voltage: 2,
+            time: 10,
+            kclConc: 1, // Replaces saltConc
+            conductivity: 1,
+            distance: 5,
+            impurityConc: 0.01,
+            NaClConc: 1,
+            temperature: 298
       });
 
       const [results, setResults] = useState(null);
@@ -120,45 +118,54 @@ const GalvanicCalculator = () => {
       const [errorMessage, setErrorMessage] = useState("");
       const [showGraph, setShowGraph] = useState(false);
 
-      // Handle user input changes
+      // Field label map for user input placeholders
+      const fieldLabels = {
+            anodeConc: "تركيز الأنود (M)",
+            cathodeConc: "تركيز الكاثود (M)",
+            voltage: "الجهد المطبق (V)",
+            time: "الوقت (ث)",
+            kclConc: "تركيز KCl (M)",  // replaced saltConc
+            conductivity: "التوصيلية (S/m)",
+            distance: "المسافة (cm)",
+            impurityConc: "الشوائب (؟)",
+            NaClConc: "تركيز NaCl (M)",
+            temperature: "درجة الحرارة (K)"
+      };
+
+      // Handle input changes
       const handleInputChange = (field, value) => {
             setInputs((prev) => ({ ...prev, [field]: parseFloat(value) }));
       };
 
+      // Close popup
       const closeErrorPopup = () => {
             setErrorMessage("");
       };
 
-      /**
-       * Calculates the standard potential, actual voltage, and data points 
-       * for each experiment type.
-       * Also shows the new equation for KCl bridging:
-       *   E(cell) = Rfactor * (kclConc / conductivity) * distance
-       */
+      // Calculation logic
       const calculateResults = () => {
             try {
                   let standardCellPotential = 0;
                   let actualVoltage = 0;
                   let deltaG = 0;
                   let dataPoints = [];
-                  const stepCount = 200;
+                  const stepCount = 200; // # of steps for the line
 
                   if (selectedExp.type === "galvanic") {
-                        if (inputs.anodeConc <= 0 || inputs.cathodeConc <= 0) {
+                        // Basic galvanic eq
+                        if (inputs.anodeConc <= 0 || inputs.cathodeConc <= 0)
                               throw new Error("⚠ قيم التركيز يجب أن تكون أكبر من الصفر!");
-                        }
-                        // E(cell)^0 = Ecathode - Eanode
+
                         standardCellPotential = selectedExp.cathode - selectedExp.anode;
-                        // Actual voltage = E^0 - (0.0591 / n) * log10( anodeConc / cathodeConc )
                         actualVoltage =
                               standardCellPotential -
                               (0.0591 / selectedExp.electrons) *
                               Math.log10(inputs.anodeConc / inputs.cathodeConc);
                         deltaG = -selectedExp.electrons * F * actualVoltage;
 
-                        // X-axis from ~0.. user concentrations
+                        // from 0.. user input
                         const maxConc = Math.max(inputs.anodeConc, inputs.cathodeConc);
-                        const minC = 0.0001; // avoid log(0)
+                        const minC = 0.0001;
                         for (let i = 0; i <= stepCount; i++) {
                               const xVal = minC + (i / stepCount) * (maxConc - minC);
                               const yVal =
@@ -168,60 +175,40 @@ const GalvanicCalculator = () => {
                               dataPoints.push({ x: xVal, y: yVal });
                         }
                   } else if (selectedExp.type === "electrolysis") {
-                        // For time from 0.. inputs.time
-                        if (inputs.voltage < selectedExp.voltageRequired) {
-                              throw new Error(
-                                    "⚠ يجب أن يكون الجهد أكبر من الحد الأدنى للتحليل الكهربائي!"
-                              );
-                        }
+                        // eq for electrolysis (time from 0.. user time)
+                        if (inputs.voltage < selectedExp.voltageRequired)
+                              throw new Error("⚠ يجب أن يكون الجهد أكبر من الحد الأدنى للتحليل الكهربائي!");
+
                         standardCellPotential = selectedExp.voltageRequired;
                         actualVoltage = inputs.voltage - standardCellPotential;
                         deltaG = actualVoltage * F;
 
                         const maxTime = inputs.time;
-                        if (maxTime < 0) {
-                              throw new Error("⚠ يجب أن يكون الوقت المدخل أكبر من الصفر!");
-                        }
+                        if (maxTime < 0) throw new Error("⚠ يجب أن يكون الوقت > 0!");
                         for (let i = 0; i <= stepCount; i++) {
                               const t = (i / stepCount) * maxTime;
                               const yVal = actualVoltage * t;
                               dataPoints.push({ x: t, y: yVal });
                         }
                   } else if (selectedExp.type === "kcl_bridge") {
-                        // Our new KCl bridging approach
-                        // E(cell) = Rfactor * (kclConc / conductivity) * distance
-                        if (inputs.kclConc <= 0 || inputs.conductivity <= 0) {
+                        // eq: Ebridge = Rfactor * (kclConc / conductivity) * distance
+                        if (inputs.kclConc <= 0 || inputs.conductivity <= 0)
                               throw new Error("⚠ يجب أن تكون قيم التوصيلية وتركيز KCl موجبة!");
-                        }
-                        const maxDist = inputs.distance;
-                        if (maxDist < 0) {
-                              throw new Error("⚠ يجب أن تكون المسافة المدخلة موجبة!");
-                        }
 
-                        // Standard potential for KCl bridging eq
-                        // We'll treat it similarly
-                        // E = Rfactor * (kclConc / conductivity) => "baseVoltage"
-                        // Then actualVoltage = baseVoltage * dist
-                        const baseVoltage =
+                        const maxDist = inputs.distance;
+                        if (maxDist < 0) throw new Error("⚠ يجب أن تكون المسافة > 0!");
+
+                        // base potential
+                        standardCellPotential =
                               selectedExp.resistanceFactor *
                               (inputs.kclConc / inputs.conductivity);
-
-                        // If we want an "overall" measure:
-                        standardCellPotential = baseVoltage; // some reference
-                        // If we incorporate distance in the final eq:
-                        // E(cell) = baseVoltage * dist
-
-                        // Let's say actualVoltage = baseVoltage * distance at user input distance
-                        actualVoltage = baseVoltage * maxDist;
-
-                        // deltaG for 1 electron exchange? 
-                        // Just demonstration:
+                        // actual voltage depends on the user distance
+                        actualVoltage = standardCellPotential * maxDist;
                         deltaG = -F * actualVoltage;
 
-                        // We'll sample from distance=0.. user distance
                         for (let i = 0; i <= stepCount; i++) {
                               const dist = (i / stepCount) * maxDist;
-                              const yVal = baseVoltage * dist;
+                              const yVal = standardCellPotential * dist;
                               dataPoints.push({ x: dist, y: yVal });
                         }
                   }
@@ -257,11 +244,11 @@ const GalvanicCalculator = () => {
             setShowGraph((prev) => !prev);
       };
 
-      // Axis Labels
+      // Axis labels
       const xAxisLabel = selectedExp.xLabel || "X-Axis";
       const yAxisLabel = "الجهد (V)";
 
-      // Chart Options
+      // Chart.js Options
       const chartOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -332,20 +319,19 @@ const GalvanicCalculator = () => {
             }
       };
 
-      // We'll show custom labels for each input with units
-      // in place of field.replace(...) if we want
-      const fieldLabels = {
-            anodeConc: "تركيز الأنود (M)",
-            cathodeConc: "تركيز الكاثود (M)",
-            voltage: "الجهد المطبق (V)",
-            time: "الوقت (ث)",
-            kclConc: "تركيز KCl (M)",
-            conductivity: "التوصيلية (S/m)",
-            distance: "المسافة (cm)",
-            impurityConc: "الشوائب (؟)",
-            NaClConc: "تركيز NaCl (M)",
-            temperature: "درجة الحرارة (K)"
-      };
+      // // A map for input labels with units
+      // const fieldLabels = {
+      //       anodeConc: "تركيز الأنود (M)",
+      //       cathodeConc: "تركيز الكاثود (M)",
+      //       voltage: "الجهد المطبق (V)",
+      //       time: "الوقت (ث)",
+      //       kclConc: "تركيز KCl (M)",
+      //       conductivity: "التوصيلية (S/m)",
+      //       distance: "المسافة (cm)",
+      //       impurityConc: "الشوائب (؟)",
+      //       NaClConc: "تركيز NaCl (M)",
+      //       temperature: "درجة الحرارة (K)"
+      // };
 
       return (
             <Box sx={{ padding: 4, direction: "rtl", marginTop: "20px" }}>
@@ -356,8 +342,8 @@ const GalvanicCalculator = () => {
                         ⚡ حساب الجهد الكهربائي للخلايا الجلفانية والتحليل الكهربائي
                   </Typography>
 
+                  {/* Experiment Selection & Inputs */}
                   <Grid container spacing={3}>
-                        {/* Select Experiment */}
                         <Grid item xs={12} md={6}>
                               <Card sx={{ padding: 3, boxShadow: 3, backgroundColor: "#f9f9f9" }}>
                                     <Typography variant="h6">اختر التجربة</Typography>
@@ -385,14 +371,13 @@ const GalvanicCalculator = () => {
                               </Card>
                         </Grid>
 
-                        {/* Input Parameters */}
                         <Grid item xs={12} md={6}>
                               <Card sx={{ padding: 3, boxShadow: 3, backgroundColor: "#f9f9f9" }}>
                                     <Typography variant="h6">إدخال القيم</Typography>
                                     {selectedExp.inputs.map((field) => (
                                           <TextField
-                                                fullWidth
                                                 key={field}
+                                                fullWidth
                                                 type="number"
                                                 sx={{ marginTop: 2 }}
                                                 label={fieldLabels[field] || field}
@@ -404,7 +389,7 @@ const GalvanicCalculator = () => {
                         </Grid>
                   </Grid>
 
-                  {/* Calculate Results Button */}
+                  {/* Calculate Button */}
                   <Button
                         variant="contained"
                         color="primary"
@@ -415,7 +400,7 @@ const GalvanicCalculator = () => {
                         احسب النتائج 🔢
                   </Button>
 
-                  {/* Show Results Cards */}
+                  {/* Results Cards */}
                   {results && (
                         <Grid container spacing={2} sx={{ marginTop: 3 }}>
                               {Object.entries(results).map(([key, value]) => (
@@ -459,17 +444,21 @@ const GalvanicCalculator = () => {
                         </Card>
                   )}
 
-                  {/* Error Message Dialog */}
-                  <Dialog open={!!errorMessage} TransitionComponent={Fade} onClose={closeErrorPopup}>
+                  {/* Error Dialog */}
+                  <Dialog
+                        open={!!errorMessage}
+                        TransitionComponent={Fade}
+                        onClose={() => setErrorMessage("")}
+                  >
                         <Backdrop
                               open={!!errorMessage}
                               sx={{ zIndex: -1 }}
-                              onClick={closeErrorPopup}
+                              onClick={() => setErrorMessage("")}
                         />
-                        <DialogTitle sx={{ color: "red", textAlign: "center" }}>⚠ خطأ</DialogTitle>
-                        <DialogContent sx={{ textAlign: "center" }}>
-                              {errorMessage}
-                        </DialogContent>
+                        <DialogTitle sx={{ color: "red", textAlign: "center" }}>
+                              ⚠ خطأ
+                        </DialogTitle>
+                        <DialogContent sx={{ textAlign: "center" }}>{errorMessage}</DialogContent>
                   </Dialog>
             </Box>
       );
