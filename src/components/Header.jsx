@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import backgroundImage from "../assets/back.jpeg";
 import schoolLogo from "../assets/school.png"; // Importing the school logo
-
+import school2 from "../assets/school2.png";
 const Header = () => {
       return (
             <Box
@@ -46,9 +46,35 @@ const Header = () => {
                               }}
                         />
                   </Box>
+                  <Box
+                        sx={{
+                              position: "absolute",
+                              top: { xs: "10px", sm: "20px" }, // Adjust top for small and larger screens
+                              left: "20px", // Fixed right alignment
+                              backgroundColor: "rgba(128, 128, 128, 0.6)", // Grey color with opacity
+                              padding: "8px", // Padding inside the box
+                              borderRadius: "12px", // Rounded corners
+                              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // Subtle shadow effect
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              width: "auto",
+                              height: "auto",
+                        }}
+                  >
+                        <img
+                              src={school2}
+                              alt="School Logo"
+                              style={{
+                                    width: "auto",
+                                    height: "100px", // Adjusted height to fit better on mobile
+                                    maxHeight: "100px", // Ensures consistent size
+                              }}
+                        />
+                  </Box>
 
                   {/* ✅ Main Title */}
-                  <Box 
+                  <Box
                         sx={{
                               backgroundColor: "rgba(0, 0, 0, 0.6)", // Slightly darker overlay for readability
                               padding: { xs: "2px", md: "20px", lg: "40px", xl: "60px", xxl: "80px" }, // Adjust padding for different screens
