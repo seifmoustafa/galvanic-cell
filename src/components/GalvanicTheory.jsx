@@ -47,7 +47,7 @@ const cellData = [
       {
         icon: <Science sx={iconStyle} />,
         title: "الجزء النظري",
-        details: "⚡ المصعد: الزنك (Zn) - الأكسدة\n✅ المهبط: النحاس (Cu) - الاختزال",
+        details: "⚡ الأنود: الزنك (Zn) - الأكسدة\n✅ الكاثود: النحاس (Cu) - الاختزال",
       },
       {
         icon: <ElectricalServices sx={iconStyle} />,
@@ -75,7 +75,7 @@ const cellData = [
       {
         icon: <Science sx={iconStyle} />,
         title: "الجزء النظري",
-        details: "⚡ المصعد: الألمنيوم (Al)\n⚡ المهبط: النحاس (Cu)",
+        details: "⚡ الأنود: الألمنيوم (Al)\n⚡ الكاثود: النحاس (Cu)",
       },
       {
         icon: <ElectricalServices sx={iconStyle} />,
@@ -101,7 +101,7 @@ const cellData = [
       {
         icon: <Science sx={iconStyle} />,
         title: "الجزء النظري",
-        details: "⚡ المصعد: الحديد (Fe)\n⚡ المهبط: الفضة (Ag)",
+        details: "⚡ الأنود: الحديد (Fe)\n⚡ الكاثود: الفضة (Ag)",
       },
       {
         icon: <ElectricalServices sx={iconStyle} />,
@@ -128,7 +128,7 @@ const cellData = [
       {
         icon: <Science sx={iconStyle} />,
         title: "الجزء النظري",
-        details: "⚡ المصعد: الرصاص (Pb) - الأكسدة\n✅ المهبط: الرصاص (Pb) - الاختزال",
+        details: "⚡ الأنود: الرصاص (Pb) - الأكسدة\n✅ الكاثود: الرصاص (Pb) - الاختزال",
       },
       {
         icon: <ElectricalServices sx={iconStyle} />,
@@ -156,7 +156,7 @@ const cellData = [
       {
         icon: <Science sx={iconStyle} />,
         title: "الجزء النظري",
-        details: "⚡ المصعد: الجرافيت أو البلاتين\n✅ المهبط: الفولاذ المقاوم للصدأ أو البلاتين",
+        details: "⚡ الأنود: الجرافيت أو البلاتين\n✅ الكاثود: الفولاذ المقاوم للصدأ أو البلاتين",
       },
       {
         icon: <ElectricalServices sx={iconStyle} />,
@@ -199,12 +199,12 @@ const cellData = [
         title: "التفاعلات",
         details:
           `في خلية جلفانية تحتوي على جسر ملح KCl:
-  • عند المصعد (الأكسدة):
-  • عند المهبط (الاختزال):
+  • عند الأنود (الأكسدة):
+  • عند الكاثود (الاختزال):
   
   دور أيونات K⁺ و Cl⁻:
-  • K⁺ يتحرك نحو المهبط (لمعادلة الشحنة السالبة).
-  • Cl⁻ يتحرك نحو المصعد (لمعادلة الشحنة الموجبة).`
+  • K⁺ يتحرك نحو الكاثود (لمعادلة الشحنة السالبة).
+  • Cl⁻ يتحرك نحو الأنود (لمعادلة الشحنة الموجبة).`
       },
       {
         icon: <Bolt sx={iconStyle} />,
@@ -244,9 +244,9 @@ const GalvanicTheory = () => {
     <div style={{ marginTop: "20px" }}>
       <Box sx={{ textAlign: "center", padding: "20px", direction: "rtl" }}>
         <Typography color="white" variant="h4" sx={{ fontWeight: "bold", paddingY: "20px" }}>
-          ⚡ الخلايا الجلفانية - التفسير النظري
+          ⚡ الخلايا الالكتروكيميائية - التفسير النظري
         </Typography>
-        <Grid container spacing={4} justifyContent="center">
+        <Grid container spacing={4} justifyContent="center">  
           {cellData.map((cell, index) => (
             <Grid item xs={12} sm={4} key={index}>
               <CardActionArea onClick={() => handleOpen(cell)}>
