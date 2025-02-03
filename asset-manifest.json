@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/galvanic-cell/static/css/main.84d74550.css",
-    "main.js": "/galvanic-cell/static/js/main.764183d3.js",
+    "main.js": "/galvanic-cell/static/js/main.c957b1ae.js",
     "static/media/school.png": "/galvanic-cell/static/media/school.f8e83d1d5057f082d94d.png",
     "static/media/danial_cell.png": "/galvanic-cell/static/media/danial_cell.9a3d3c01f8be298b8264.png",
     "static/media/sodium.png": "/galvanic-cell/static/media/sodium.aae491c0d3a54ae3d4f5.png",
@@ -13,10 +13,10 @@
     "static/media/Iron-Silver.png": "/galvanic-cell/static/media/Iron-Silver.eebc0f7cbe2895f5b8fa.png",
     "index.html": "/galvanic-cell/index.html",
     "main.84d74550.css.map": "/galvanic-cell/static/css/main.84d74550.css.map",
-    "main.764183d3.js.map": "/galvanic-cell/static/js/main.764183d3.js.map"
+    "main.c957b1ae.js.map": "/galvanic-cell/static/js/main.c957b1ae.js.map"
   },
   "entrypoints": [
     "static/css/main.84d74550.css",
-    "static/js/main.764183d3.js"
+    "static/js/main.c957b1ae.js"
   ]
 }
